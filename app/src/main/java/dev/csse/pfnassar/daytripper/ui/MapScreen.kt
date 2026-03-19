@@ -423,7 +423,7 @@ fun MapScreen(
                         }
                     }
 
-                    if (selectedStop.id != nextStopId && !isPathingThisStop) {
+                    if (!selectedStop.completed && selectedStop.id != nextStopId && !isPathingThisStop ) {
                         Text(
                             text = "Finish earlier stops before starting this one.",
                             style = MaterialTheme.typography.bodySmall,
