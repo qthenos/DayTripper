@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -60,6 +61,9 @@ dependencies {
     implementation(libs.navigation.compose)
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.compose.ui.text.google.fonts)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -67,4 +71,14 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+    implementation("com.mapbox.maps:android-ndk27:11.19.0")
+    implementation("com.mapbox.extension:maps-compose-ndk27:11.19.0")
+
+    implementation("com.mapbox.search:autofill-ndk27:2.18.2")
+    implementation("com.mapbox.search:discover-ndk27:2.18.2")
+    implementation("com.mapbox.search:place-autocomplete-ndk27:2.18.2")
+    implementation("com.mapbox.search:offline-ndk27:2.18.2")
+    implementation("com.mapbox.search:mapbox-search-android-ndk27:2.18.2")
+    implementation("com.mapbox.search:mapbox-search-android-ui-ndk27:2.18.2")
 }

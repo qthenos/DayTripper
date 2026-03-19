@@ -1,5 +1,7 @@
 package dev.csse.pfnassar.daytripper.ui
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,7 +17,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -41,6 +42,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.mapbox.search.result.SearchSuggestion
 import dev.csse.pfnassar.daytripper.ui.theme.AppTheme
 import dev.csse.pfnassar.daytripper.Route
 import java.time.LocalTime
@@ -79,9 +81,13 @@ fun TripListScreen(
             RouteCard(
                 route = route,
                 index = index,
-                onLocationChange = { newLocation ->
-                    model.setLocation(route, newLocation)
+                suggestions = model.searchSuggestions,
+                activeSearchRouteId = model.activeSearchRouteId,
+                onSearch = { query -> model.searchLocation(query, route.id) },
+                onSuggestionSelected = { suggestion ->
+                    model.selectSuggestion(suggestion, route.id)
                 },
+                onLocationCleared = { model.clearRouteLocation(route.id) },
                 onTimeChange = { newTime ->
                     model.setTime(route, newTime) },
                 onDelete = {
@@ -115,7 +121,11 @@ fun RouteCard(
     route: Route,
     index: Int,
     modifier: Modifier = Modifier,
-    onLocationChange: (String) -> Unit = {},
+    suggestions: List<SearchSuggestion> = emptyList(),
+    activeSearchRouteId: Int? = null,
+    onSearch: (String) -> Unit = {},
+    onSuggestionSelected: (SearchSuggestion) -> Unit = {},
+    onLocationCleared: () -> Unit = {},
     onTimeChange: (LocalTime) -> Unit = {},
     onDelete: () -> Unit = {}
 ) {
@@ -143,19 +153,15 @@ fun RouteCard(
                     style = MaterialTheme.typography.labelMedium
                 )
                 Spacer(modifier = Modifier.height(4.dp))
-                TextField(
-                    value = route.location,
-                    onValueChange = onLocationChange,
-                    modifier = Modifier.fillMaxWidth(),
-                    placeholder = { Text("e.g. Central Park") },
-                    leadingIcon = {
-                        Icon(
-                            Icons.Filled.LocationOn,
-                            contentDescription = "Destination"
-                        )
-                    },
-                    shape = RoundedCornerShape(8.dp),
-                    singleLine = true
+                LocationSearchField(
+                    routeId = route.id,
+                    locationName = route.location,
+                    hasCoordinate = route.coordinate != null,
+                    suggestions = suggestions,
+                    activeSearchRouteId = activeSearchRouteId,
+                    onSearch = onSearch,
+                    onSuggestionSelected = onSuggestionSelected,
+                    onLocationCleared = onLocationCleared
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
